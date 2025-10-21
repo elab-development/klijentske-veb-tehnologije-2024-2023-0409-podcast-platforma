@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { YouTubeAPI, parseISODurationToClock } from '../lib/youtube';
 import type { YTVideoItem } from '../types/youtube';
+import type { PodcastVideo } from '../types/youtube';
+import { favorites } from '../lib/favorites';
 import {
   FaArrowLeft,
   FaYoutube,
@@ -9,6 +11,7 @@ import {
   FaEye,
   FaCalendarAlt,
   FaExternalLinkAlt,
+  FaHeart,
 } from 'react-icons/fa';
 
 type Detail = {
@@ -29,12 +32,25 @@ export default function PodcastDetails() {
   const [item, setItem] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isFav, setIsFav] = useState(false);
 
   const bestThumb = (it?: YTVideoItem) =>
     it?.snippet?.thumbnails?.high?.url ||
     it?.snippet?.thumbnails?.medium?.url ||
     it?.snippet?.thumbnails?.default?.url ||
     '';
+
+  const toPodcastVideo = (d: Detail): PodcastVideo => ({
+    id: d.id,
+    title: d.title,
+    description: d.description,
+    channelTitle: d.channelTitle,
+    channelId: d.channelId,
+    publishedAt: d.publishedAt,
+    thumbnail: d.thumbnail,
+    duration: d.duration,
+    viewCount: d.viewCount,
+  });
 
   useEffect(() => {
     const run = async () => {
@@ -63,6 +79,7 @@ export default function PodcastDetails() {
             : undefined,
         };
         setItem(detail);
+        setIsFav(favorites.has(detail.id));
       } catch (e: any) {
         setError(e?.message || 'Failed to load podcast details.');
       } finally {
@@ -72,26 +89,56 @@ export default function PodcastDetails() {
     run();
   }, [podcastId]);
 
+  useEffect(() => {
+    const unsub = favorites.subscribe(() => {
+      if (item) setIsFav(favorites.has(item.id));
+    });
+    return unsub;
+  }, [item]);
+
+  const toggleFavorite = () => {
+    if (!item) return;
+    const pv = toPodcastVideo(item);
+    const nowIn = favorites.toggle(pv);
+    setIsFav(nowIn);
+  };
+
   return (
     <main className='mx-auto max-w-5xl'>
-      <div className='mb-4 flex items-center justify-between'>
+      <div className='mb-4 flex items-center justify-between gap-2'>
         <Link
           to='/podcasts'
           className='inline-flex items-center gap-2 text-sm text-gray-300 hover:text-white'
         >
           <FaArrowLeft /> Back to Podcasts
         </Link>
-        {item && (
-          <a
-            href={`https://www.youtube.com/watch?v=${item.id}`}
-            target='_blank'
-            rel='noreferrer'
-            className='inline-flex items-center gap-2 px-3 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition'
-            title='Open on YouTube'
-          >
-            <FaYoutube /> Watch on YouTube
-          </a>
-        )}
+        <div className='flex items-center gap-2'>
+          {item && (
+            <button
+              onClick={toggleFavorite}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                isFav
+                  ? 'bg-red-600 text-white hover:bg-red-700'
+                  : 'bg-neutral-800 text-gray-200 hover:bg-neutral-700 border border-neutral-700'
+              }`}
+              title={isFav ? 'Remove from Favorites' : 'Add to Favorites'}
+            >
+              <FaHeart />
+              {isFav ? 'Remove Favorite' : 'Add to Favorites'}
+            </button>
+          )}
+          {item && (
+            <a
+              href={`https://www.youtube.com/watch?v=${item.id}`}
+              target='_blank'
+              rel='noreferrer'
+              className='inline-flex items-center gap-2 px-3 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition'
+              title='Open on YouTube'
+            >
+              <FaYoutube /> Watch on YouTube
+            </a>
+          )}
+        </div>
       </div>
 
       {loading && <p className='text-gray-400'>Loading…</p>}
