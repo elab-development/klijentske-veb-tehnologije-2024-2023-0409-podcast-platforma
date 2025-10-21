@@ -50,7 +50,6 @@ export interface YTVideoItem {
     title: string;
     description: string;
     channelTitle: string;
-    channelId: string;
     publishedAt: string;
     thumbnails: YTThumbnails;
   };
@@ -67,7 +66,6 @@ export interface PodcastVideo {
   title: string;
   description: string;
   channelTitle: string;
-  channelId: string;
   publishedAt: string;
   thumbnail: string;
   duration?: string;
