@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -25,3 +26,13 @@ export default defineConfig({
         jsx: 'automatic',
     },
 });
+=======
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});
+>>>>>>> a5709d2b5fc092e386dc1dd3795c8717915d1953

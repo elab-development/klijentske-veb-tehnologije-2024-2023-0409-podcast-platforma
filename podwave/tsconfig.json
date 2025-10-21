@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "compilerOptions": {
         /* Visit https://aka.ms/tsconfig to read more about this file */
 
@@ -114,4 +115,11 @@
         "jsx": "react-jsx"
     },
     "include": ["resources/js/**/*.ts", "resources/js/**/*.d.ts", "resources/js/**/*.tsx"]
+=======
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+>>>>>>> a5709d2b5fc092e386dc1dd3795c8717915d1953
 }
