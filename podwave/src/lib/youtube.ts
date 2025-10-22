@@ -5,7 +5,7 @@ import type {
   YTThumbnails,
 } from '../types/youtube';
 
-const API_KEY = import.meta.env.VITE_YT_API_KEY as string;
+const API_KEY = 'AIzaSyC7rivXFZWsV6cF92HlNz4FxkwxT5ls4iQ';
 const BASE = 'https://www.googleapis.com/youtube/v3';
 
 function bestThumb(thumbnails?: YTThumbnails): string {
